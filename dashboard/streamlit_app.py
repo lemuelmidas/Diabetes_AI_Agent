@@ -1,14 +1,13 @@
 import streamlit as st
-import requests
-import os
 import numpy as np
+import joblib  # used to load the trained model
 
-# 🔁 Read the API base URL from an environment variable (default to localhost)
-API_URL = os.environ.get("API_URL", "http://localhost:5000")
+# Load the model (ensure path is correct in Replit)
+model = joblib.load("model/diabetes_model.pkl")
 
 st.title("🧠 Diabetes Prediction")
 
-# Collect user inputs
+# Input fields
 preg = st.number_input("Pregnancies", min_value=0)
 glucose = st.number_input("Glucose", min_value=0)
 bp = st.number_input("Blood Pressure", min_value=0)
@@ -19,27 +18,14 @@ dpf = st.number_input("Diabetes Pedigree Function", min_value=0.0)
 age = st.number_input("Age", min_value=1)
 
 if st.button("Predict"):
-    features = {
-        "pregnancies": preg,
-        "glucose": glucose,
-        "blood_pressure": bp,
-        "skin_thickness": skin,
-        "insulin": insulin,
-        "bmi": bmi,
-        "diabetes_pedigree_function": dpf,
-        "age": age
-    }
+    # Prepare input as array for the model
+    features = np.array([[preg, glucose, bp, skin, insulin, bmi, dpf, age]])
+    
+    # Get prediction from the model
+    prediction = model.predict(features)[0]
 
-    try:
-        #response = requests.post(f"{API_URL}/predict", json=features)
-        response = requests.post(f"https://diabetes-ai-agent.onrender.com/predict", json=features)
-        https://diabetes-ai-agent.onrender.com
-        prediction = response.json().get("prediction")
-
-        if prediction == 1:
-            st.error("⚠️ You have diabetes.**")
-        else:
-            st.success("✅ You do not have diabetes.**")
-    except requests.exceptions.RequestException as e:
-        st.error("Failed to connect to the prediction API.")
-        st.text(f"Error details: {e}")
+    # Show result
+    if prediction == 1:
+        st.error("⚠️ The model predicts that the patient **has diabetes.**")
+    else:
+        st.success("✅ The model predicts that the patient **does not have diabetes.**")
