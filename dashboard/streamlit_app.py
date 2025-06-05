@@ -1,6 +1,9 @@
 import streamlit as st
 import requests
 
+# Read API URL from environment variable, or default to localhost
+API_URL = os.environ.get("API_URL", "http://localhost:5000")
+
 st.title("Diabetes Prediction App")
 
 # Input form
@@ -27,7 +30,9 @@ if st.button("Predict"):
     }
 
     try:
-        response = requests.post("http://localhost:5000/predict", json=features)
+        #response = requests.post("http://localhost:5000/predict", json=features)
+        #response = requests.post(f"{API_URL}/predict", json=features)
+        response = requests.post("https://diabetes-ai-agent.onrender.com", json=features)
         result = response.json().get('prediction')
         st.success(f"Prediction: {result}")
     except requests.exceptions.ConnectionError:

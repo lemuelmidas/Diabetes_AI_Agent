@@ -22,5 +22,5 @@ def predict():
     result = 'Diabetic' if prediction == 1 else 'Non-Diabetic'
     return jsonify({'prediction': result})
 
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+if __name__ == '__main__': 
+    app.run(host="0.0.0.0", port=5000, debug = True)
